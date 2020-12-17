@@ -29,4 +29,12 @@ factortbl <- df %>%
 max_reviews = round(max(df$num_reviews),-3)
 max_price = round(max(df$price),-3)
 
+tmp <- df %>% 
+  group_by(., country=lcbo_country) %>% 
+  summarise(., total=n()) %>% 
+  arrange(., desc(total))
+country.names <- c(tmp$country)
+tot.country.names <- setNames(as.list(seq(1,length(country.names))),country.names)
+tot.country.sel <- seq(1,length(country.names))
+
 ################################################################################

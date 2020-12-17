@@ -4,7 +4,7 @@
 ################################################################################
 
 # Main function
-shinyServer(function(input, output){
+shinyServer(function(input, output, session){
   
   # Server functions for Dashboard item
   #####################################
@@ -143,34 +143,70 @@ shinyServer(function(input, output){
   
   # Main Scatter Chart 
   #############################################################################
+  
+  
+  
+  
+  
+  
   output$scat11 <- renderGvis({
-    numrev = input$slider11
-    pricemin = input$slider12[1]
-    pricemax = input$slider12[2]
     
-    cht11 <- df %>%
-      filter(., (viv_name != "missed")) %>%
-      filter(., container == "bottle") %>%
-      filter(., fwscore4 > 80) %>% 
-      filter(., num_reviews > numrev) %>%
-      filter(., (price > pricemin) & (price < pricemax)) %>% 
-      mutate(., ttname = paste(paste(paste(lcbo_name,price,sep=":$"),size.mL,sep=":"),vintage,sep="mL:")) %>% 
-      select(., AvgRating=score, Price=price, country=lcbo_country, ttname)
     
-    tmp <- cht11 %>% 
-      group_by(., country) %>% 
-      summarise(., total=n()) %>% 
-      arrange(., desc(total))
+      
+      numrev = input$slider11
+      pricemin = input$slider12[1]
+      pricemax = input$slider12[2]
+      
+      
+      
+      cht11 <- df %>%
+        filter(., (viv_name != "missed")) %>%
+        filter(., container == "bottle") %>%
+        filter(., fwscore4 > 80) %>% 
+        filter(., num_reviews > numrev) %>%
+        filter(., (price > pricemin) & (price < pricemax)) %>% 
+        mutate(., ttname = paste(paste(paste(lcbo_name,price,sep=":$"),size.mL,sep=":"),vintage,sep="mL:")) %>% 
+        select(., AvgRating=score, Price=price, country=lcbo_country, ttname)
+      
+      if (dim(cht11)[1]==0){
+        cht11 <- data.frame(AvgRating=0, Price=0, country="None", ttname="None")
+      }
+      
+      tmp <- cht11 %>% 
+        group_by(., country) %>% 
+        summarise(., total=n()) %>% 
+        arrange(., desc(total))
+      
+      
+    observe({  
+      
+      checkvarnames <-c(tmp$country)
+      checklist<- setNames(as.list(seq(1,length(checkvarnames))),checkvarnames)
+      
+      updateCheckboxGroupInput(
+        session, 
+        inputId = "checkbox13",
+        choices = checklist,
+        selected = input$checkbox13
+        )
+    })
+      
+      
+      dt <- cht11[,c("AvgRating", "Price")]
+      
+      for (icount in tmp$country){
+        dt[icount] <- ifelse(cht11$country==icount, dt$Price, NA)
+        dt[paste(icount,"html","tooltip",sep=".")] <- cht11$ttname
+      }
+      dt$Price <- NULL
+      
     
-    dt <- cht11[,c("AvgRating", "Price")]
     
-    for (icount in tmp$country){
-      dt[icount] <- ifelse(cht11$country==icount, dt$Price, NA)
-      dt[paste(icount,"html","tooltip",sep=".")] <- cht11$ttname
-    }
-    dt$Price <- NULL
+    
 
     gvisScatterChart(dt,options=my_options)
+    
+    
   })
   
   # Charts 1: Rating boxplots by country 

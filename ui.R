@@ -39,18 +39,24 @@ shinyUI(dashboardPage(title = "Red Wine Dashboard", skin = "green",
                                     infoBoxOutput("infoBox24", width=3)
                                     ),
                                   fluidRow(
+                                    box(htmlOutput("scat11"), width = 6, height = 500
+                                    ),
+                                    box(checkboxGroupInput("checkbox13", label = h4("Select country/countries"), 
+                                                           choices = tot.country.names,
+                                                           selected = tot.country.sel),
+                                        width = 3
+                                    )
+                                    ),
+                                  fluidRow(
                                     box(sliderInput("slider11", label = h4("Minimum number of reviews"), min = 0, 
                                                     max = max_reviews, value = 1000),
                                         width = 3
-                                        ),
+                                    ),
                                     box(sliderInput("slider12", label = h4("Price range (C$)"), min = 0, 
                                                     max = max_price, value = c(0,max_price)),
                                         width = 3
-                                        )
-                                    ),
-                                  fluidRow(
-                                    box(htmlOutput("scat11"), width = 6, height = 500
-                                        )
+                                    )
+                                    
                                     ),
                                   # fluidRow(
                                   #   box(title = "Cons. Cyclical : B", status = "primary",
