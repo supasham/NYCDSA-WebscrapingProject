@@ -19,8 +19,6 @@ shinyServer(function(input, output){
   
   # First 4 Infoboxes 
   #############################################################################
-  
-  
   output$infoBox11 <- renderInfoBox({
     ans1 <- df %>% select(., lcbo_name) %>% summarise(., total=n())
     ans2 <- df %>% select(., container) %>% unique(.)
@@ -84,7 +82,7 @@ shinyServer(function(input, output){
     ans1 = df %>% select(., size.mL) %>% filter(., size.mL==750 ) %>% summarise(., total=n())
     tot = paste0(formatC(as.numeric(ans1), format="f", digits=0, big.mark=","))
     
-    box21 <- get_infobox_text("Total Items", tot, "750ml bottles")
+    box21 <- get_infobox_text("Total Bottles", tot, "750ml bottles")
 
     infoBox(box21[1], value = box21[2], subtitle = box21[3],
             icon = icon("wine-bottle"), fill = FALSE,
@@ -130,6 +128,74 @@ shinyServer(function(input, output){
             )
   })
   #############################################################################
+  
+  # Charts for dashboard
+  #############################################################################
+  
+  # Create helper functions to set options for Google charts 
+  #############################################################################
+  my_options <- list(width="780", height="430",
+                     vAxis="{title:'Price (CAD)'}",
+                     hAxis="{title:'Average wine rating'}",
+                     hAxis.gridlines = "{color: '#333'}",
+                     chartArea = "{left:70,top:30,width:'75%',height:'85%'}",
+                     explorer = "{actions:['dragToZoom','rightClickToReset']}")
+  
+  # Main Scatter Chart 
+  #############################################################################
+  output$scat11 <- renderGvis({
+    numrev = input$slider11
+    pricemin = input$slider12[1]
+    pricemax = input$slider12[2]
+    
+    cht11 <- df %>%
+      filter(., (viv_name != "missed")) %>%
+      filter(., container == "bottle") %>%
+      filter(., fwscore4 > 80) %>% 
+      filter(., num_reviews > numrev) %>%
+      filter(., (price > pricemin) & (price < pricemax)) %>% 
+      mutate(., ttname = paste(paste(paste(lcbo_name,price,sep=":$"),size.mL,sep=":"),vintage,sep="mL:")) %>% 
+      select(., AvgRating=score, Price=price, country=lcbo_country, ttname)
+    
+    tmp <- cht11 %>% 
+      group_by(., country) %>% 
+      summarise(., total=n()) %>% 
+      arrange(., desc(total))
+    
+    dt <- cht11[,c("AvgRating", "Price")]
+    
+    for (icount in tmp$country){
+      dt[icount] <- ifelse(cht11$country==icount, dt$Price, NA)
+      dt[paste(icount,"html","tooltip",sep=".")] <- cht11$ttname
+    }
+    dt$Price <- NULL
+
+    gvisScatterChart(dt,options=my_options)
+  })
+  
+  # Charts 1: Rating boxplots by country 
+  #############################################################################
+  output$ggdistbox <- renderPlot({
+      numrev = input$slidernumrev
+      
+      ggdistbox <- df %>%
+        filter(., (viv_name != "missed")) %>%
+        filter(., container == "bottle") %>%
+        filter(., size.mL == 750) %>% 
+        filter(., fwscore4 > 80) %>% 
+        filter(., num_reviews > numrev) %>%  
+        ggplot(., aes(x = reorder(lcbo_country, score, FUN = median),
+                      y = score, fill = lcbo_country)) +
+        geom_boxplot(alpha = 0.5) +
+        coord_flip() +
+        labs(x = "lcbo_country", y = "Average Rating") +
+        theme_light() +
+        theme(legend.position = "none")
+      
+      ggdistbox
+      
+    })
+  
   
   
   # Create helper functions to set options for Google charts 

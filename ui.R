@@ -12,11 +12,11 @@ shinyUI(dashboardPage(title = "Red Wine Dashboard", skin = "green",
                         sidebarMenu(
                           menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")
                                    ),
-                          # menuItem("Charts", icon = icon("bar-chart-o"),
-                          #          menuSubItem("Custom Average Charts", tabName = "charts1"),
+                          menuItem("Charts", icon = icon("bar-chart-o"),
+                                    menuSubItem("Distribution Charts", tabName = "charts1")
                           #          menuSubItem("Factor Charts", tabName = "charts2"),
                           #          menuSubItem("Distribution Charts", tabName = "charts3")
-                          #          ),
+                                    ),
                           menuItem("Data", tabName = "data", icon = icon("database")
                                    )
                           )
@@ -38,16 +38,20 @@ shinyUI(dashboardPage(title = "Red Wine Dashboard", skin = "green",
                                     infoBoxOutput("infoBox23", width=3),
                                     infoBoxOutput("infoBox24", width=3)
                                     ),
-                                  # fluidRow(
-                                  #   box(title = "Cons. Cyclical : BB", status = "primary",
-                                  #       solidHeader = TRUE, htmlOutput("scat11"), width=3),
-                                  #   box(title = "Cons. Non-Cycl. : BB", status = "primary",
-                                  #       solidHeader = TRUE, htmlOutput("scat12"), width=3),
-                                  #   box(title = "Financials : AA", status = "primary",
-                                  #       solidHeader = TRUE, htmlOutput("scat13"), width=3),
-                                  #   box(title = "Oil & Gas : A", status = "primary",
-                                  #       solidHeader = TRUE, htmlOutput("scat14"), width=3)
-                                  #   ),
+                                  fluidRow(
+                                    box(sliderInput("slider11", label = h4("Minimum number of reviews"), min = 0, 
+                                                    max = max_reviews, value = 1000),
+                                        width = 3
+                                        ),
+                                    box(sliderInput("slider12", label = h4("Price range (C$)"), min = 0, 
+                                                    max = max_price, value = c(0,max_price)),
+                                        width = 3
+                                        )
+                                    ),
+                                  fluidRow(
+                                    box(htmlOutput("scat11"), width = 6, height = 500
+                                        )
+                                    ),
                                   # fluidRow(
                                   #   box(title = "Cons. Cyclical : B", status = "primary",
                                   #       solidHeader = TRUE, htmlOutput("scat21"), width=3),
@@ -59,37 +63,34 @@ shinyUI(dashboardPage(title = "Red Wine Dashboard", skin = "green",
                                   #       solidHeader = TRUE, htmlOutput("scat24"), width=3)
                                   #   )
                                   ),
-                          # tabItem(tabName = "charts1",
-                          #         # Create first chart sub-item that will allow user to choose own factors to plot
-                          #         fluidRow(box(title = "Term Structure 1", status = "primary", solidHeader = TRUE,
-                          #                      selectizeInput("regionselected1", "Select Region to Display",
-                          #                                     regionchoice),
-                          #                      selectizeInput("sectorselected1", "Select Sector to Display",
-                          #                                     sectorchoice),
-                          #                      selectizeInput("ratingselected1", "Select Rating to Display",
-                          #                                     ratingchoice),
-                          #                      width = 3
-                          #                      ),
-                          #                  box(title = "Term Structure 1", status = "primary", solidHeader = TRUE,
-                          #                      htmlOutput("chart11"), width = 6, height = 300
-                          #                      )
-                          #                  ),
-                          #         br(),
-                          #         br(),
-                          #         fluidRow(box(title = "Term Structure 2", status = "info", solidHeader = TRUE,
-                          #                      selectizeInput("regionselected2", "Select Region to Display",
-                          #                                     regionchoice),
-                          #                      selectizeInput("sectorselected2", "Select Sector to Display",
-                          #                                     sectorchoice),
-                          #                      selectizeInput("ratingselected2","Select Rating to Display",
-                          #                                     ratingchoice),
-                          #                      width = 3
-                          #                      ),
-                          #                  box(title = "Term Structure 2", status = "info", solidHeader = TRUE,
-                          #                      htmlOutput("chart12"), width = 6, height = 300
-                          #                      )
-                          #                  )
-                          #         ),
+                          tabItem(tabName = "charts1",
+                                  # Create first chart sub-item that will allow user to choose own factors to plot
+                                  fluidRow(
+                                    box(title = "Average Rating", status = "primary", solidHeader = TRUE,
+                                        sliderInput("slidernumrev", label = h3("Minimum number of reviews"), min = 0,
+                                                    max = max_reviews, value = 1000),
+                                        width = 3
+                                        ),
+                                    box(title = "Average Rating", status = "primary", solidHeader = TRUE,
+                                        plotOutput("ggdistbox"), width = 6, height = 480
+                                        )
+                                    )
+                                  # br(),
+                                  # br(),
+                                  # fluidRow(box(title = "Term Structure 2", status = "info", solidHeader = TRUE,
+                                  #              selectizeInput("regionselected2", "Select Region to Display",
+                                  #                             regionchoice),
+                                  #              selectizeInput("sectorselected2", "Select Sector to Display",
+                                  #                             sectorchoice),
+                                  #              selectizeInput("ratingselected2","Select Rating to Display",
+                                  #                             ratingchoice),
+                                  #              width = 3
+                                  #              ),
+                                  #          box(title = "Term Structure 2", status = "info", solidHeader = TRUE,
+                                  #              htmlOutput("chart12"), width = 6, height = 300
+                                  #              )
+                                  #          )
+                                  ),
                           # tabItem(tabName = "charts2",
                           #         # Create second chart sub-item consisting of heatmaps of the major factors
                           #         fluidRow(box(plotOutput("ggall")),
