@@ -54,7 +54,7 @@ shinyServer(function(input, output, session){
       summarise(., total=n()) %>% 
       arrange(., desc(total))
     
-    box13 <- get_infobox_text("Most Popular Region", ans1[1,1], ans[1,2])
+    box13 <- get_infobox_text("Most Popular Region", ans1[1,1], ans1[1,2])
 
     infoBox(box13[1], value = box13[2], subtitle = box13[3],
             icon = icon("globe-americas"), fill = FALSE,
@@ -145,20 +145,15 @@ shinyServer(function(input, output, session){
   #############################################################################
   
   
-  
-  
-  
-  
   output$scat11 <- renderGvis({
     
+    pricetype = input$radio13   
+    numrev = input$slider11
+    pricemin = input$slider12[1]
+    pricemax = input$slider12[2]
     
-      
-      numrev = input$slider11
-      pricemin = input$slider12[1]
-      pricemax = input$slider12[2]
-      
-      
-      
+    
+    if (pricetype == "Price per bottle"){
       cht11 <- df %>%
         filter(., (viv_name != "missed")) %>%
         filter(., container == "bottle") %>%
@@ -167,6 +162,18 @@ shinyServer(function(input, output, session){
         filter(., (price > pricemin) & (price < pricemax)) %>% 
         mutate(., ttname = paste(paste(paste(lcbo_name,price,sep=":$"),size.mL,sep=":"),vintage,sep="mL:")) %>% 
         select(., AvgRating=score, Price=price, country=lcbo_country, ttname)
+    } else {
+      cht11 <- df %>%
+        filter(., (viv_name != "missed")) %>%
+        filter(., container == "bottle") %>%
+        filter(., fwscore4 > 80) %>% 
+        filter(., num_reviews > numrev) %>%
+        filter(., (price > pricemin) & (price < pricemax)) %>% 
+        mutate(., ttname = paste(paste(paste(lcbo_name,price,sep=":$"),size.mL,sep=":"),vintage,sep="mL:")) %>% 
+        select(., AvgRating=score, Price=unit_price, country=lcbo_country, ttname)
+    }
+    
+      
       
       if (dim(cht11)[1]==0){
         cht11 <- data.frame(AvgRating=0, Price=0, country="None", ttname="None")
@@ -177,21 +184,6 @@ shinyServer(function(input, output, session){
         summarise(., total=n()) %>% 
         arrange(., desc(total))
       
-      
-    observe({  
-      
-      checkvarnames <-c(tmp$country)
-      checklist<- setNames(as.list(seq(1,length(checkvarnames))),checkvarnames)
-      
-      updateCheckboxGroupInput(
-        session, 
-        inputId = "checkbox13",
-        choices = checklist,
-        selected = input$checkbox13
-        )
-    })
-      
-      
       dt <- cht11[,c("AvgRating", "Price")]
       
       for (icount in tmp$country){
@@ -200,12 +192,10 @@ shinyServer(function(input, output, session){
       }
       dt$Price <- NULL
       
-    
-    
-    
 
     gvisScatterChart(dt,options=my_options)
     
+     
     
   })
   

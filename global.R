@@ -35,6 +35,6 @@ tmp <- df %>%
   arrange(., desc(total))
 country.names <- c(tmp$country)
 tot.country.names <- setNames(as.list(seq(1,length(country.names))),country.names)
-tot.country.sel <- seq(1,length(country.names))
+tot.country.sel <- as.list(seq(1,length(country.names)))
 
 ################################################################################

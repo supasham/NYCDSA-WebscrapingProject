@@ -39,15 +39,6 @@ shinyUI(dashboardPage(title = "Red Wine Dashboard", skin = "green",
                                     infoBoxOutput("infoBox24", width=3)
                                     ),
                                   fluidRow(
-                                    box(htmlOutput("scat11"), width = 6, height = 500
-                                    ),
-                                    box(checkboxGroupInput("checkbox13", label = h4("Select country/countries"), 
-                                                           choices = tot.country.names,
-                                                           selected = tot.country.sel),
-                                        width = 3
-                                    )
-                                    ),
-                                  fluidRow(
                                     box(sliderInput("slider11", label = h4("Minimum number of reviews"), min = 0, 
                                                     max = max_reviews, value = 1000),
                                         width = 3
@@ -55,30 +46,27 @@ shinyUI(dashboardPage(title = "Red Wine Dashboard", skin = "green",
                                     box(sliderInput("slider12", label = h4("Price range (C$)"), min = 0, 
                                                     max = max_price, value = c(0,max_price)),
                                         width = 3
+                                    ),
+                                    box(radioButtons("radio13", label = "Select price type:",
+                                                     choices = list("Price per bottle", "Price per mL"),
+                                                     selected = "Price per bottle"),
+                                        width = 3
+                                        )
+                                    ),
+                                  fluidRow(
+                                    box(htmlOutput("scat11"), width = 6, height = 500
                                     )
                                     
-                                    ),
-                                  # fluidRow(
-                                  #   box(title = "Cons. Cyclical : B", status = "primary",
-                                  #       solidHeader = TRUE, htmlOutput("scat21"), width=3),
-                                  #   box(title = "Cons. Non-Cycl. : B", status = "primary",
-                                  #       solidHeader = TRUE, htmlOutput("scat22"), width=3),
-                                  #   box(title = "Financials : A", status = "primary",
-                                  #       solidHeader = TRUE, htmlOutput("scat23"), width=3),
-                                  #   box(title = "Oil & Gas : BBB", status = "primary",
-                                  #       solidHeader = TRUE, htmlOutput("scat24"), width=3)
-                                  #   )
-                                  ),
+                                  )
+                          ),
                           tabItem(tabName = "charts1",
                                   # Create first chart sub-item that will allow user to choose own factors to plot
                                   fluidRow(
-                                    box(title = "Average Rating", status = "primary", solidHeader = TRUE,
-                                        sliderInput("slidernumrev", label = h3("Minimum number of reviews"), min = 0,
+                                    box(sliderInput("slidernumrev", label = h3("Minimum number of reviews"), min = 0,
                                                     max = max_reviews, value = 1000),
                                         width = 3
                                         ),
-                                    box(title = "Average Rating", status = "primary", solidHeader = TRUE,
-                                        plotOutput("ggdistbox"), width = 6, height = 480
+                                    box(plotOutput("ggdistbox"), width = 6, height = 480
                                         )
                                     )
                                   # br(),
