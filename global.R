@@ -19,6 +19,9 @@ df = read.csv('final_redwine.csv', header = TRUE, encoding = 'UTF-8')
 # Global R data wrangling and cleanups
 ################################################################################
 
+df <- df %>% 
+  mutate(., log_price = log(price), log_unit_price = log(unit_price))
+
 
 factortbl <- df %>%
   filter(., viv_name != "missed") %>% 

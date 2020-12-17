@@ -5,7 +5,7 @@
 
 # Main function to generate dashboard
 shinyUI(dashboardPage(title = "Red Wine Dashboard", skin = "green",
-                      # Put the data of the latest data as title
+                      
                       dashboardHeader(title = "Red Wine Analysis"),
                       dashboardSidebar(
                         sidebarUserPanel("User", image ="LCBO.jpg"),
@@ -13,8 +13,8 @@ shinyUI(dashboardPage(title = "Red Wine Dashboard", skin = "green",
                           menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")
                                    ),
                           menuItem("Charts", icon = icon("bar-chart-o"),
-                                    menuSubItem("Distribution Charts", tabName = "charts1")
-                          #          menuSubItem("Factor Charts", tabName = "charts2"),
+                                    menuSubItem("Rating by Country", tabName = "charts1"),
+                                    menuSubItem("Price per mL by Country", tabName = "charts2")
                           #          menuSubItem("Distribution Charts", tabName = "charts3")
                                     ),
                           menuItem("Data", tabName = "data", icon = icon("database")
@@ -25,7 +25,7 @@ shinyUI(dashboardPage(title = "Red Wine Dashboard", skin = "green",
                         tabItems(
                           # Use infoBoxes and charts to show the most important information
                           tabItem(tabName = "dashboard",
-                                  # Create 4 fluid rows of 4 items each for the 8 most material variables
+                                  
                                   fluidRow(
                                     infoBoxOutput("infoBox11", width=3),
                                     infoBoxOutput("infoBox12", width=3),
@@ -60,40 +60,31 @@ shinyUI(dashboardPage(title = "Red Wine Dashboard", skin = "green",
                                   )
                           ),
                           tabItem(tabName = "charts1",
-                                  # Create first chart sub-item that will allow user to choose own factors to plot
                                   fluidRow(
-                                    box(sliderInput("slidernumrev", label = h3("Minimum number of reviews"), min = 0,
+                                    box(sliderInput("slider21", label = h3("Minimum number of reviews"), min = 0,
                                                     max = max_reviews, value = 1000),
                                         width = 3
                                         ),
-                                    box(plotOutput("ggdistbox"), width = 6, height = 480
+                                    box(plotOutput("ggdist21"), width = 6, height = 480
                                         )
                                     )
-                                  # br(),
-                                  # br(),
-                                  # fluidRow(box(title = "Term Structure 2", status = "info", solidHeader = TRUE,
-                                  #              selectizeInput("regionselected2", "Select Region to Display",
-                                  #                             regionchoice),
-                                  #              selectizeInput("sectorselected2", "Select Sector to Display",
-                                  #                             sectorchoice),
-                                  #              selectizeInput("ratingselected2","Select Rating to Display",
-                                  #                             ratingchoice),
-                                  #              width = 3
-                                  #              ),
-                                  #          box(title = "Term Structure 2", status = "info", solidHeader = TRUE,
-                                  #              htmlOutput("chart12"), width = 6, height = 300
-                                  #              )
-                                  #          )
+                                  
                                   ),
-                          # tabItem(tabName = "charts2",
-                          #         # Create second chart sub-item consisting of heatmaps of the major factors
-                          #         fluidRow(box(plotOutput("ggall")),
-                          #                  box(plotOutput("ggsector"))
-                          #                  ),
-                          #         fluidRow(box(plotOutput("ggregion")),
-                          #                  box(plotOutput("ggrating"))
-                          #                  )
-                          #         ),
+                          tabItem(tabName = "charts2",
+                                  fluidRow(
+                                    box(plotOutput("ggdist31"), width = 6, height = 480
+                                    ),
+                                    box(sliderInput("slider31", label = h3("Maximum bottle price"), min = 0,
+                                                    max = max_price, value = 10000),
+                                        width = 3
+                                    ),
+                                    box(radioButtons("radio31", label = "Select price type:",
+                                                     choices = list("Price per bottle", "Price per mL", "Log price per bottle", "Log price per mL"),
+                                                     selected = "Price per bottle"),
+                                        width = 3
+                                    )
+                                  )
+                                  ),
                           # tabItem(tabName = "charts3",
                           #         # Create third chart sub-item consisting of distribution plots of various factors
                           #         fluidRow(box(title = "Factor", status = "primary", solidHeader = TRUE,

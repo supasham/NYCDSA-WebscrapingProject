@@ -201,172 +201,99 @@ shinyServer(function(input, output, session){
   
   # Charts 1: Rating boxplots by country 
   #############################################################################
-  output$ggdistbox <- renderPlot({
-      numrev = input$slidernumrev
+  output$ggdist21 <- renderPlot({
+      numrev = input$slider21
       
-      ggdistbox <- df %>%
+      ggdist21 <- df %>%
         filter(., (viv_name != "missed")) %>%
         filter(., container == "bottle") %>%
-        filter(., size.mL == 750) %>% 
         filter(., fwscore4 > 80) %>% 
         filter(., num_reviews > numrev) %>%  
         ggplot(., aes(x = reorder(lcbo_country, score, FUN = median),
                       y = score, fill = lcbo_country)) +
         geom_boxplot(alpha = 0.5) +
         coord_flip() +
-        labs(x = "lcbo_country", y = "Average Rating") +
+        labs(x = "Country", y = "Average Rating") +
         theme_light() +
         theme(legend.position = "none")
       
-      ggdistbox
+      ggdist21
       
     })
   
-  
-  
-  # Create helper functions to set options for Google charts 
+  # Charts 2: Price per mL boxplots by country 
   #############################################################################
-  # set_my_options = function(maxtenor){
-  #   list(
-  #     legend = "none",
-  #     seriesType = "bars",
-  #     series = "[{targetAxisIndex: 0},{targetAxisIndex: 1, type:'scatter'}]",
-  #     vAxes = "[{title:'delta'}, {title:'CDS level'}]",
-  #     hAxis.gridlines = "{color: '#333'}",
-  #     hAxis = paste0("{title:'tenor(yrs)', minValue:1, maxValue:",
-  #                    as.character(maxtenor),
-  #                    ",ticks: [",
-  #                    paste(as.character(c(1:maxtenor)), collapse=","),
-  #                    "]}"),
-  #     chartArea = "{height: 'automatic'}",
-  #     explorer = "{actions:['dragToZoom','rightClickToReset']}"
-  #     )
-  # }
+  output$ggdist31 <- renderPlot({
+    
+    pricetype31 = input$radio31
+    maxprice31 = input$slider31
+    
+    if (pricetype31 == "Price per bottle"){
+      ggdist31 <- df %>%
+        filter(., (viv_name != "missed")) %>%
+        filter(., container == "bottle") %>%
+        filter(., (price < maxprice31)) %>%
+        filter(., fwscore4 > 80) %>% 
+        filter(., num_reviews > 100) %>%  
+        ggplot(., aes(x = reorder(lcbo_country, price, FUN = median),
+                      y = price, fill = lcbo_country)) +
+        geom_boxplot(alpha = 0.5) +
+        coord_flip() +
+        labs(x = "Country", y = "Price per bottle (CAD)") +
+        theme_light() +
+        theme(legend.position = "none")
+    } else if (pricetype31 == "Price per mL") {
+      ggdist31 <- df %>%
+        filter(., (viv_name != "missed")) %>%
+        filter(., container == "bottle") %>%
+        filter(., (price < maxprice31)) %>%
+        filter(., fwscore4 > 80) %>% 
+        filter(., num_reviews > 100) %>%  
+        ggplot(., aes(x = reorder(lcbo_country, unit_price, FUN = median),
+                      y = unit_price, fill = lcbo_country)) +
+        geom_boxplot(alpha = 0.5) +
+        coord_flip() +
+        labs(x = "Country", y = "Price per mL (CAD)") +
+        theme_light() +
+        theme(legend.position = "none")
+    } else if (pricetype31 == "Log price per bottle") {
+      ggdist31 <- df %>%
+        filter(., (viv_name != "missed")) %>%
+        filter(., container == "bottle") %>%
+        filter(., (price < maxprice31)) %>%
+        filter(., fwscore4 > 80) %>% 
+        filter(., num_reviews > 100) %>%  
+        ggplot(., aes(x = reorder(lcbo_country, log_price, FUN = median),
+                      y = log_price, fill = lcbo_country)) +
+        geom_boxplot(alpha = 0.5) +
+        coord_flip() +
+        labs(x = "Country", y = "Log Price per bottle (CAD)") +
+        theme_light() +
+        theme(legend.position = "none")
+    } else if (pricetype31 == "Log price per mL") {
+      ggdist31 <- df %>%
+        filter(., (viv_name != "missed")) %>%
+        filter(., container == "bottle") %>%
+        filter(., (price < maxprice31)) %>%
+        filter(., fwscore4 > 80) %>% 
+        filter(., num_reviews > 100) %>%  
+        ggplot(., aes(x = reorder(lcbo_country, log_unit_price, FUN = median),
+                      y = log_unit_price, fill = lcbo_country)) +
+        geom_boxplot(alpha = 0.5) +
+        coord_flip() +
+        labs(x = "Country", y = "Log Price per mL (CAD)") +
+        theme_light() +
+        theme(legend.position = "none")
+    }
+    
+    ggdist31
+    
+  })
   
-  # First 4 Infoboxes 
-  #############################################################################
-  # output$scat11 <- renderGvis({
-  #   cht11 <- avgdata %>% 
-  #     filter(., (Sector == "Consumer Cycl.") & 
-  #              (Rating == "BB") & 
-  #              (Region == "North America") & 
-  #              (Tenor<=10)) %>%
-  #     transmute(., Tenor, 
-  #               CDS.change = round(sprdchanges,1), 
-  #               CDS.today = round(ParSpreadMid.t,1))
-  #   
-  #   gvisComboChart(cht11, xvar="Tenor",
-  #                  yvar=c("CDS.change", "CDS.today"),
-  #                  options=set_my_options(10))
-  # })
-  # 
-  # output$scat12 <- renderGvis({
-  #   cht12 <- avgdata %>% 
-  #     filter(., (Sector == "Consumer Non-Cycl.") & 
-  #              (Rating == "BB") & 
-  #              (Region == "North America") & 
-  #              (Tenor<=10)) %>% 
-  #     transmute(., Tenor,
-  #               CDS.change = round(sprdchanges,1),
-  #               CDS.today = round(ParSpreadMid.t,1))
-  #   
-  #   gvisComboChart(cht12, xvar="Tenor",
-  #                  yvar=c("CDS.change", "CDS.today"),
-  #                  options=set_my_options(10))
-  # })
-  # 
-  # output$scat13 <- renderGvis({
-  #   cht13 <- avgdata %>% 
-  #     filter(., (Sector == "Financials") &
-  #              (Rating == "AA") &
-  #              (Region == "North America") &
-  #              (Tenor<=10)) %>%
-  #     transmute(., Tenor,
-  #               CDS.change = round(sprdchanges,1),
-  #               CDS.today = round(ParSpreadMid.t,1))
-  #   
-  #   gvisComboChart(cht13, xvar="Tenor",
-  #                  yvar=c("CDS.change", "CDS.today"),
-  #                  options=set_my_options(10))
-  # })
-  # 
-  # output$scat14 <- renderGvis({
-  #   cht14 <- avgdata %>% 
-  #     filter(., (Sector == "Oil & Gas") & 
-  #              (Rating == "A") & 
-  #              (Region == "North America") & 
-  #              (Tenor<=10)) %>%
-  #     transmute(., Tenor,
-  #               CDS.change = round(sprdchanges,1),
-  #               CDS.today = round(ParSpreadMid.t,1))
-  #   
-  #   gvisComboChart(cht14, xvar="Tenor",
-  #                  yvar=c("CDS.change", "CDS.today"),
-  #                  options=set_my_options(10))
-  # })
-  # #############################################################################
-  # 
-  # # Second 4 Infoboxes 
-  # #############################################################################
-  # output$scat21 <- renderGvis({
-  #   cht21 <- avgdata %>% 
-  #     filter(., (Sector == "Consumer Cycl.") &
-  #              (Rating == "B") &
-  #              (Region == "North America") &
-  #              (Tenor<=10)) %>% 
-  #     transmute(., Tenor,
-  #               CDS.change = round(sprdchanges,1),
-  #               CDS.today = round(ParSpreadMid.t,1))
-  #   
-  #   gvisComboChart(cht21, xvar="Tenor",
-  #                  yvar=c("CDS.change", "CDS.today"),
-  #                  options=set_my_options(10))
-  # })
-  # 
-  # output$scat22 <- renderGvis({
-  #   cht22 <- avgdata %>% 
-  #     filter(., (Sector == "Consumer Non-Cycl.") &
-  #              (Rating == "B") &
-  #              (Region == "North America") &
-  #              (Tenor<=10)) %>% 
-  #     transmute(., Tenor, 
-  #               CDS.change = round(sprdchanges,1), 
-  #               CDS.today = round(ParSpreadMid.t,1))
-  #   
-  #   gvisComboChart(cht22, xvar="Tenor",
-  #                  yvar=c("CDS.change", "CDS.today"),
-  #                  options=set_my_options(10))
-  # })
-  # 
-  # output$scat23 <- renderGvis({
-  #   cht23 <- avgdata %>% 
-  #     filter(., (Sector == "Financials") &
-  #              (Rating == "A") &
-  #              (Region == "North America") &
-  #              (Tenor<=10)) %>% 
-  #     transmute(., Tenor,
-  #               CDS.change = round(sprdchanges,1),
-  #               CDS.today = round(ParSpreadMid.t,1))
-  #   
-  #   gvisComboChart(cht23, xvar="Tenor",
-  #                  yvar=c("CDS.change", "CDS.today"),
-  #                  options=set_my_options(10))
-  # })
-  # 
-  # output$scat24 <- renderGvis({
-  #   cht24 <- avgdata %>% 
-  #     filter(., (Sector == "Oil & Gas") &
-  #              (Rating == "BBB") &
-  #              (Region == "North America") &
-  #              (Tenor<=10)) %>% 
-  #     transmute(., Tenor,
-  #               CDS.change = round(sprdchanges,1),
-  #               CDS.today = round(ParSpreadMid.t,1))
-  #   
-  #   gvisComboChart(cht24, xvar="Tenor",
-  #                  yvar=c("CDS.change", "CDS.today"),
-  #                  options=set_my_options(10))
-  # })
+  
+  
+  
+  
   #############################################################################
   
   
