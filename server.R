@@ -290,15 +290,69 @@ shinyServer(function(input, output, session){
     
   })
   
-  
-  
-  
-  
   #############################################################################
   
   
-  # Server functions for first Charts item
-  ########################################
+  # Consumer vs Critic Rating
+  #############################################################################
+  
+  # Create helper functions to set options for Google charts 
+  #############################################################################
+  my_options1 <- list(width="780", height="430",
+                     vAxis="{title:'Critic Rating (max 100)'}",
+                     hAxis="{title:'Consumer Rating (max 5)'}",
+                     hAxis.gridlines = "{color: '#333'}",
+                     chartArea = "{left:70,top:30,width:'75%',height:'85%'}",
+                     explorer = "{actions:['dragToZoom','rightClickToReset']}")
+  
+  
+  output$scat41 <- renderGvis({
+    
+    numrev = input$slider41
+    pricemin = input$slider42[1]
+    pricemax = input$slider42[2]
+    
+    
+   cht11 <- df %>%
+        filter(., (viv_name != "missed")) %>%
+        filter(., container == "bottle") %>%
+        filter(., fwscore4 > 80) %>% 
+        filter(., num_reviews > numrev) %>%
+        filter(., (price > pricemin) & (price < pricemax)) %>%
+        filter(., critic != "none") %>%
+        mutate(., ttname1 = paste(paste(paste(paste(lcbo_name,price,sep=":$"),size.mL,sep=":"),vintage,sep="mL:"),critic,sep=":")) %>% 
+        select(., AvgRating=score, Critic=critic_score, country=lcbo_country, ttname1)
+   
+    
+    
+    
+    if (dim(cht11)[1]==0){
+      cht11 <- data.frame(AvgRating=0, Critic=0, country="None", ttname1="None")
+    }
+    
+    tmp <- cht11 %>% 
+      group_by(., country) %>% 
+      summarise(., total=n()) %>% 
+      arrange(., desc(total))
+    
+    dt <- cht11[,c("AvgRating", "Critic")]
+    
+    for (icount in tmp$country){
+      dt[icount] <- ifelse(cht11$country==icount, dt$Critic, NA)
+      dt[paste(icount,"html","tooltip",sep=".")] <- cht11$ttname1
+    }
+    dt$Critic <- NULL
+    
+    
+    gvisScatterChart(dt,options=my_options1)
+    
+    
+    
+  })
+  
+  
+  
+  
   # output$chart11 <- renderGvis({
   #   chtdata11 <- avgdata %>%
   #     filter(., (Sector == input$sectorselected1) &
