@@ -40,7 +40,7 @@ shinyUI(dashboardPage(title = "Red Wine Dashboard", skin = "green",
                                     ),
                                   fluidRow(
                                     box(sliderInput("slider11", label = h4("Minimum number of reviews"), min = 0, 
-                                                    max = max_reviews, value = 1000),
+                                                    max = max_reviews, value = 1),
                                         width = 3
                                     ),
                                     box(sliderInput("slider12", label = h4("Price range (C$)"), min = 0, 

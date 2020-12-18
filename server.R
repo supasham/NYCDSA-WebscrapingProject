@@ -67,7 +67,7 @@ shinyServer(function(input, output, session){
       arrange(., desc(num_reviews))
     tot = paste0(formatC(as.numeric(ans1[1,3]), format="f", digits=0, big.mark=","))
     
-    box14 <- get_infobox_text("Most Vivino Reviews", tot, ans1[1,2])
+    box14 <- get_infobox_text("Most Vivino Ratings", tot, ans1[1,2])
 
     infoBox(box14[1], value = box14[2], subtitle = box14[3],
             icon = icon("thumbs-up"), fill = FALSE,
@@ -147,8 +147,8 @@ shinyServer(function(input, output, session){
   
   output$scat11 <- renderGvis({
     
-    pricetype = input$radio13   
     numrev = input$slider11
+    pricetype = input$radio13   
     pricemin = input$slider12[1]
     pricemax = input$slider12[2]
     
@@ -351,120 +351,7 @@ shinyServer(function(input, output, session){
   })
   
   
-  
-  
-  # output$chart11 <- renderGvis({
-  #   chtdata11 <- avgdata %>%
-  #     filter(., (Sector == input$sectorselected1) &
-  #              (Rating == input$ratingselected1) &
-  #              (Region == input$regionselected1)) %>%
-  #     transmute(., Tenor,
-  #               CDS.change = round(sprdchanges, 1),
-  #               CDS.today = round(ParSpreadMid.t, 1))
-  #   
-  #   gvisComboChart(chtdata11, xvar = "Tenor", yvar = c("CDS.change", "CDS.today"),
-  #                  options = set_my_options(30))
-  # })
-  # 
-  # output$chart12 <- renderGvis({
-  #   chtdata12 <- avgdata %>%
-  #     filter(., (Sector == input$sectorselected2) &
-  #              (Rating == input$ratingselected2) &
-  #              (Region == input$regionselected2)) %>%
-  #     transmute(., Tenor,
-  #               CDS.change = round(sprdchanges, 1),
-  #               CDS.today = round(ParSpreadMid.t, 1))
-  #   
-  #   gvisComboChart(chtdata12, xvar = "Tenor", yvar = c("CDS.change", "CDS.today"),
-  #                  options = set_my_options(30))
-  # })
-  #############################################################################
-  
-  
-  # Server functions for second Charts item
-  #########################################
-  
-  # # Create own color palettes for heatmaps, red as negative and blue as positive
-  # redpal <- c('#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d')
-  # redpal <- rev(redpal)
-  # bluepal <- c('#f7fbff','#deebf7','#c6dbef','#9ecae1','#6baed6','#4292c6','#2171b5','#08519c','#08306b')
-  # colors <- c(redpal, bluepal)
-  # 
-  # # Create helper function to creat ggplot heatmaps for factors
-  # makefactorplots <- function(df, yvar, colorpalette) {
-  #   ggplot(df, aes(x = reorder(as.character(Tenor), Tenor, FUN = max),
-  #                  y = reorder(Category, Factor, FUN = mean))) +
-  #     geom_tile(aes(fill = Factor)) +
-  #     scale_fill_gradientn(colors = colorpalette,
-  #                          breaks = seq(minfactor / 100, maxfactor / 100, by = 0.01),
-  #                          labels = paste0(as.character(c(minfactor:maxfactor)), "%"),
-  #                          limits = c(minfactor / 100, maxfactor / 100)
-  #                          ) +
-  #     labs(x = "Tenor", y = yvar) +
-  #     theme_light() +
-  #     facet_grid(. ~ Class)
-  # }
-  # 
-  # # Create heatmaps for all factors
-  # output$ggall <- renderPlot({
-  #   ggall <- makefactorplots(classdf, "All Factors", colors)
-  #   ggall
-  # })
-  # 
-  # output$ggregion <- renderPlot({
-  #   ggregion <- makefactorplots(regiondf, "Region", colors)
-  #   ggregion
-  # })
-  # 
-  # output$ggsector <- renderPlot({
-  #   ggsec <- makefactorplots(sectordf, "Sector", colors)
-  #   ggsec
-  # })
-  # 
-  # output$ggrating <- renderPlot({
-  #   ggrating <- makefactorplots(ratingdf, "Rating", colors)
-  #   ggrating
-  # })
-  #############################################################################
-  
-  
-  # Server functions for third Charts item
-  #########################################
-  # output$ggdistbox <- renderPlot({
-  #   bvar1 = input$radio31
-  #   bvar2 = input$radio32
-  #   
-  #   ggdistbox <- avgdata %>%
-  #     filter(., (Rating != "No Rating") & (Rating != "CCC")) %>%
-  #     filter(., Tenor == bvar2) %>%
-  #     ggplot(., aes(x = reorder(get(bvar1), ParSpreadMid.t, FUN = mean),
-  #                   y = ParSpreadMid.t, fill = get(bvar1))) +
-  #     geom_boxplot(alpha = 0.5) + 
-  #     coord_flip() +
-  #     labs(x = bvar1, y = "CDS spread") +
-  #     theme_light() +
-  #     theme(legend.position = "none")
-  #   
-  #   ggdistbox
-  # })
-  # 
-  # output$ggdistdensity <- renderPlot({
-  #   dvar1 = input$radio33
-  #   dvar2 = input$radio34
-  #   
-  #   ggdistdensity <- avgdata %>%
-  #     filter(., (Rating != "No Rating") & (Rating != "CCC")) %>%
-  #     filter(., Tenor == dvar2) %>%
-  #     ggplot(., aes(x = ParSpreadMid.t, fill = get(dvar1))) +
-  #     geom_density(alpha = 0.25) +
-  #     labs(x = "CDS Spread", y = "Frequency", fill = dvar1) +
-  #     theme_light()
-  #   
-  #   ggdistdensity
-  # })
-  #############################################################################
-  
-  
+
   # Server functions for data table item
   #########################################
   output$table <- DT::renderDataTable({
